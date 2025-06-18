@@ -45,12 +45,21 @@ tabsParent.addEventListener('click', (event) => {
     const deadline = '2026-06-11';
 
     function getTimeRemaining(endtime) {
-        const t = Date.parse(endtime) - Date.parse(new Date()),
+        const t = Date.parse(endtime) - Date.parse(new Date());
+        let days, hours, minutes, seconds;
+
+        if(t <= 0){
+            days = 0;
+            hours = 0;
+            seconds = 0;
+        } else {
             days = Math.floor( (t/(1000*60*60*24)) ),
             seconds = Math.floor( (t/1000) % 60 ),
             minutes = Math.floor( (t/1000/60) % 60 ),
             hours = Math.floor( (t/(1000*60*60) % 24) );
 
+        }
+    
         return {
             'total': t,
             'days': days,
@@ -94,4 +103,57 @@ tabsParent.addEventListener('click', (event) => {
     }
 
     setClock('.timer', deadline);
+
+    //Modal 
+
+    const modalTrigger = document.querySelectorAll('[data-modal]'),
+    modal = document.querySelector('.modal'),
+    modalCloseBtn = document.querySelector('[data-close]');
+
+    
+    function openModal(){
+        // modal.classList.add('show');
+        // modal.classList.remove('hide');
+        modal.classList.toggle('show');
+        document.body.style.overflow = 'hidden';
+        clearInterval(ModalTimerId);
+    }
+
+    modalTrigger.forEach(btn => {
+        btn.addEventListener('click', openModal);  
+    });  
+
+        function closeModal(){
+             // modal.classList.add('hide');
+        // modal.classList.remove('show');
+        modal.classList.toggle('show');
+        document.body.style.overflow = '';
+        }
+
+     modalCloseBtn.addEventListener('click', closeModal);
+
+modal.addEventListener('click',(e) => {
+    if(e.target === modal ) {
+         closeModal();
+    }
+});
+
+
+    document.addEventListener('keydown', (e) => {
+        if(e.code === "Escape" && modal.classList.contains('show')){
+            closeModal();
+        }
+    });
+
+const ModalTimerId = setTimeout(openModal, 9000);
+
+    function showModalByScroll(){
+         if(window.pageYOffset + document.documentElement.clientHeight >= document.
+            documentElement.scrollHeight -1){
+                openModal();
+                window.removeEventListener('scroll', showModalByScroll )
+            }
+    }
+
+    window.addEventListener('scroll', showModalByScroll);
 });
